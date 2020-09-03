@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 375px;
+            height: 667px;
+            background-color: #251A26;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            padding-top: 120.68px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            margin: 0px 74.85px 0 74px;
+        }
+
+        #username {
+
+            height: 34px;
+            background-color: #FEFBBB;
+            border: 0;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            padding: 7px 0 10px 12px;
+            margin-top: 50px;
+
+        }
+
+        .form {
+            width: 228px;
+            margin: 20px 73px 0 74px;
+            text-align: center;
+        }
+
+        .bt {
+            display: inline-block;
+            width: 120px;
+            height: 40px;
+            margin-top: 54px;
+            cursor: pointer;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo"><img src="./img/Logo.svg" alt=""></div>
+        <div class="form">
+            <input type="text" name="username" id="username" placeholder="User name" maxlength="5">
+            <div class="bt"><img src="./img/button_start.svg" alt="" onclick="gochart()"></div>
+        </div>
+
+    </div>
+    <script>
+        function gochart() {
+            let name = document.querySelector("#username").value;
+            if (name !== "") {
+                let name = document.querySelector("#username").value;
+                console.log(name);
+                sessionStorage.setItem("name", name);
+                location.href = "chat.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

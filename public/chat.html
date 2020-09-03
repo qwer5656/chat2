@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: 13px Helvetica, Arial;
+        }
+
+        .container {
+            min-width: 375px;
+            width: 100%;
+            height: 100vh;
+            margin: auto;
+        }
+
+        .namewrap {
+            width: 100%;
+            background-color: #251A26;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+        }
+
+        #contain {
+            width: 100%;
+            height: calc(100vh - 160px);
+            overflow: auto;
+
+        }
+
+        .textwrap {
+            height: 80px;
+            width: 100%;
+            background-color: #251A26;
+            padding-top: 20px;
+        }
+
+        #m {
+            min-width: 300px;
+            width: calc(100% - 60px);
+            height: 34px;
+            background-color: #FAFAFA;
+            border: 1px solid #FFFFFF;
+            border-radius: 100px;
+            outline: 0;
+            margin: 0 10px 0 20px;
+            font-size: 24px;
+            padding-left: 10px;
+        }
+
+        .send {
+            width: 22px;
+            height: 22px;
+            vertical-align: middle;
+        }
+
+
+        .reutrn {
+            width: 12px;
+            font-size: 30px;
+            color: white;
+
+        }
+
+        #name {
+            font-size: 18px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        .center {
+            border-radius: 11px;
+            height: 25px;
+            box-sizing: border-box;
+            background-color: #707070;
+            text-align: center;
+            display: inline-block;
+            padding: 5px 10px;
+
+
+        }
+
+        .wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .rightwrap {
+            display: flex;
+            justify-content: flex-end;
+            margin: 10px 10px;
+
+        }
+
+        .right {
+            background-color: #FEFBBB;
+            padding: 14px 8px 21px 9px;
+            word-break: break-all;
+            border-radius: 10px;
+
+        }
+
+        .leftwrap {
+            display: flex;
+            justify-content: flex-start;
+            margin: 10px 10px;
+
+        }
+
+        .left {
+            background-color: #AFDAC3;
+            padding: 14px 8px 21px 9px;
+            word-break: break-all;
+            border-radius: 10px;
+
+        }
+
+        .namelogo {
+            width: 43px;
+            height: 43px;
+            background: url("./img/boy.png");
+            background-size: 43px 43px;
+            background-color: aquamarine;
+            margin-right: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .names {
+            text-align: center;
+            color: aqua;
+        }
+
+        /* matching start */
+        .containermatch {
+            width: 375px;
+            height: 100vh;
+            background-color: #251A26;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            padding-top: 120.68px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            margin: 0px 74.85px 0 74px;
+        }
+
+        #username {
+
+            height: 34px;
+            background-color: #FEFBBB;
+            border: 0;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            padding: 7px 0 10px 12px;
+            margin-top: 50px;
+
+        }
+
+        .form {
+            width: 228px;
+            margin: 70px 73px 0 74px;
+            text-align: center;
+        }
+
+        .matching {
+            color: #FEFBBB;
+            font-weight: bold;
+            font-size: 28px;
+
+        }
+
+        .bt {
+            display: inline-block;
+            width: 120px;
+            height: 40px;
+            margin-top: 200px;
+            cursor: pointer;
+
+        }
+
+        /* match end */
+    </style>
+</head>
+
+<body>
+    <div class="containermatch">
+        <div class="logo"><img src="./img/Logo.svg" alt=""></div>
+        <div class="form">
+            <div class="matching">Matching…</div>
+            <div class="bt"><img src="./img/button_cancel.svg" alt="" onclick="location.href='/'"></div>
+        </div>
+
+    </div>
+    <div class="container" style="display:none">
+        <div class="namewrap">
+            <div class="reutrn">
+                < </div>
+                    <div id="name"></div>
+            </div>
+            <div id="contain">
+
+            </div>
+            <div class="textwrap">
+                <input id="m" autocomplete="off" /><img src="./img/icon_send.svg" alt="" class="send">
+            </div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script>
+            (function () {
+                let id;
+                let group;
+                let match = false;
+                var socket = io();
+                let name = sessionStorage.getItem("name");
+                if (name == "")
+                    location.href = "/";
+                $("#name").text(name);
+
+                $('.send').click(function (e) {
+                    if (match == true && $('#m').val() != "") {
+                        e.preventDefault(); // prevents page reloading
+                        socket.emit('chat message', { "user": name, "data": $('#m').val(), group });
+                        $('#m').val('');
+                        return false;
+                    }
+                });
+                socket.on('chat message', function (data) {
+
+                    if (data.id === id) {
+                        $('#contain').append($('<div class="rightwrap">').html("<div class='right'>" + data.msg));
+                    }
+                    else {
+                        $('#contain').append($('<div class="leftwrap">').html(
+                            `<div class="names"><div class="namelogo"></div>${data.name}</div><div class='left'>${data.msg}`));
+                    }
+
+                });
+                socket.on('init', function (msg) {
+                    id = msg;
+                    console.log(msg);
+                });
+                socket.on('userinfo', function (msg) {
+                    $('#contain').append($('<div class="wrap">').html("<div class='center'>" + msg));
+                });
+                socket.on('matching', function (msg) {
+                    document.querySelector(".containermatch").style.display = "none";
+                    document.querySelector(".container").style.display = "block";
+                    group = msg.group;
+                    socket.emit('userinfo', { "group": group });
+                    match = true;
+                });
+                socket.on('exit', function (msg) {
+                    $('#contain').append($('<div class="wrap">').html("<div class='center'>" + msg));
+                    match = false;
+                });
+                document.querySelector(".reutrn").addEventListener("click", leave);
+                function leave() {
+                    socket.emit('exit', { "group": group });
+                    location.href = '/';
+                }
+
+            })()
+
+        </script>
+</body>
+
+</html>
